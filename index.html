@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Productividad</title>
+    <!-- Favicon: busto romano en pestaña del navegador -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23F5F3EC'/><g fill='none' stroke='%236A8A62' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><ellipse cx='16' cy='11' rx='5.5' ry='6'/><line x1='12' y1='16.5' x2='11.5' y2='20'/><line x1='20' y1='16.5' x2='20.5' y2='20'/><path d='M5 31C5 24 9.5 20 11.5 20L20.5 20C22.5 20 27 24 27 31'/><path d='M11.5 20Q14 25.5 16 26Q18 25.5 20.5 20'/></g></svg>">
+    <style>
+        :root {
+            --bg: #F5F3EC; --bg2: #FFFFFF; --bg3: #EFECE4;
+            --nav-bg: rgba(238, 233, 222, 0.85); --brd: #DFD9C9;
+            --tx: #1D1D1F; --mu: #86868B; --accent: #6A8A62;
+            --accent-light: #EAF0E8; --shadow: 0 4px 24px rgba(106, 138, 98, 0.08);
+        }
+        body { margin:0; padding:0; padding-top:52px; padding-bottom:85px; background-color:var(--bg); color:var(--tx); font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif; -webkit-tap-highlight-color:transparent; }
+        .container { padding:24px 16px; max-width:480px; margin:0 auto; }
+        .card { background:var(--bg2); border-radius:20px; padding:20px; margin-bottom:16px; border:1.5px solid var(--brd); box-shadow:var(--shadow); }
+        .inp { background:var(--bg3); border:1.5px solid var(--brd); border-radius:12px; padding:14px 16px; color:var(--tx); font-size:16px; width:100%; box-sizing:border-box; outline:none; font-family:inherit; transition:all 0.2s; }
+        .inp:focus { border:1.5px solid var(--accent); background:var(--bg2); box-shadow:0 0 0 3px rgba(106,138,98,0.14); }
+        .ta { resize:vertical; min-height:60px; line-height:1.5; }
+        .btn { border:none; cursor:pointer; font-family:inherit; transition:transform 0.1s,opacity 0.2s; }
+        .btn:active { transform:scale(0.96); }
+        nav { position:fixed; bottom:0; left:0; right:0; background:var(--nav-bg); backdrop-filter:saturate(180%) blur(20px); -webkit-backdrop-filter:saturate(180%) blur(20px); border-top:1px solid rgba(223,217,201,0.6); display:flex; z-index:100; padding-bottom:env(safe-area-inset-bottom); }
+        .nav-btn { flex:1; padding:12px 0 10px; background:none; border:none; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:3px; font-size:9px; font-weight:600; color:#9A958A; transition:color 0.2s; letter-spacing:0.2px; }
+        .nav-btn.active { color:var(--accent); }
+        .nav-icon { width:20px; height:20px; display:flex; align-items:center; justify-content:center; }
+        .nav-icon svg { width:100%; height:100%; }
+        .flex { display:flex; } .items-center { align-items:center; } .justify-between { justify-content:space-between; }
+        .grid-12 { display:grid; grid-template-columns:repeat(12,1fr); gap:4px; }
+        .sans { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
+        /* Selector de hora compacto */
+        select.time-sel { background:var(--bg3); border:1.5px solid var(--brd); border-radius:10px; padding:10px 4px; color:var(--tx); font-size:16px; font-weight:600; width:100%; box-sizing:border-box; outline:none; font-family:inherit; text-align:center; }
+        select.time-sel:focus { border-color:var(--accent); }
+    </style>
+</head>
+<body>
+
+    <!-- Header con logo profesional (medallón minimalista) -->
+    <header style="position:fixed;top:0;left:0;right:0;height:52px;background:rgba(245,243,236,0.95);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid rgba(223,217,201,0.8);display:flex;align-items:center;justify-content:center;gap:10px;z-index:200;padding-top:env(safe-area-inset-top);">
+        <!-- Logo: busto en medallón circular -->
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <circle cx="16" cy="16" r="15" fill="#EAF0E8" stroke="#6A8A62" stroke-width="1"/>
+            <g stroke="#6A8A62" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                <ellipse cx="16" cy="11.5" rx="5.5" ry="6" stroke-width="1.3"/>
+                <line x1="12.5" y1="17" x2="12" y2="20.5" stroke-width="1.2"/>
+                <line x1="19.5" y1="17" x2="20" y2="20.5" stroke-width="1.2"/>
+                <path d="M7 30C7 23.5 11 20.5 12 20.5L20 20.5C21 20.5 25 23.5 25 30" stroke-width="1.3"/>
+                <path d="M12 20.5Q14.5 25.5 16 26Q17.5 25.5 20 20.5" stroke-width="1.1"/>
+            </g>
+        </svg>
+        <span style="font-size:12px;font-weight:600;letter-spacing:2px;color:#1D1D1F;font-family:-apple-system,sans-serif;text-transform:uppercase;">Productividad</span>
+    </header>
+
+    <div id="app"></div>
+
+    <script>
+        // ── CONSTANTES ──────────────────────────────────────────────────────────────
+        const EMOJIS = ["💪","📚","🏃","🧘","💧","🥗","😴","✍️","🎯","🧹","🎵","🌿","🎨","🤸","🛠️","🧠","☀️","🌙","☕","🍵","📖","💻","🚶","🐶","🐈","🌱","🍳","🚿","💊","💸","🎧","✉️","📷","🎹","🧶","🚲"];
+        const COLORS = ["#6A8A62","#A39171","#8C9E9D","#D4A373","#9E9689","#7A8B99","#C1A58D","#8F9A86","#B0A195","#6E7C77"];
+
+        // ── ICONOS SVG ──────────────────────────────────────────────────────────────
+        const SVGICONS = {
+            meeting:  `<svg width="XSX" height="XSX" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="4" r="2"/><path d="M1 14v-1a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v1"/><circle cx="12" cy="4" r="1.5"/><path d="M15 14v-1a3 3 0 0 0-2-2.5"/></svg>`,
+            focus:    `<svg width="XSX" height="XSX" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="7"/><circle cx="8" cy="8" r="3.5"/><circle cx="8" cy="8" r="0.8" fill="currentColor" stroke="none"/></svg>`,
+            break:    `<svg width="XSX" height="XSX" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14h10l1-7H2z"/><path d="M11.5 7.5H13a2 2 0 0 1 0 4h-1.5"/><path d="M6.5 5.5c0-1.5 2-1.5 2-3"/></svg>`,
+            meal:     `<svg width="XSX" height="XSX" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v5M3 7a3 3 0 0 0 0 5v2"/><path d="M11 2v3.5a2.5 2.5 0 0 1-2 2.45V14"/></svg>`,
+            exercise: `<svg width="XSX" height="XSX" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="1" y1="8" x2="4.5" y2="8"/><rect x="4.5" y="5.5" width="2.5" height="5" rx="0.75"/><line x1="7" y1="8" x2="9" y2="8"/><rect x="9" y="5.5" width="2.5" height="5" rx="0.75"/><line x1="11.5" y1="8" x2="15" y2="8"/></svg>`,
+            personal: `<svg width="XSX" height="XSX" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="5" r="3"/><path d="M2.5 14a5.5 5.5 0 0 1 11 0"/></svg>`,
+            other:    `<svg width="XSX" height="XSX" viewBox="0 0 16 16" fill="none" stroke="currentColor"><circle cx="8" cy="4" r="1.2" fill="currentColor" stroke="none"/><circle cx="8" cy="8" r="1.2" fill="currentColor" stroke="none"/><circle cx="8" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg>`,
+            sunrise:  `<svg width="XSX" height="XSX" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="2" x2="8" y2="4"/><line x1="2.5" y1="4.5" x2="3.9" y2="5.9"/><line x1="13.5" y1="4.5" x2="12.1" y2="5.9"/><path d="M3 11a5 5 0 0 1 10 0"/><line x1="1" y1="12" x2="15" y2="12"/></svg>`,
+            /* Luna: fill-based para evitar el recorte del trazo en iOS ↓ */
+            moon:     `<svg width="XSX" height="XSX" viewBox="0 0 16 16" fill="currentColor"><path d="M14 8.5A6 6 0 1 1 7.5 2A4.7 4.7 0 0 0 14 8.5z"/></svg>`,
+            clock:    `<svg width="XSX" height="XSX" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6.5"/><polyline points="8 5 8 8 10.5 9.5"/></svg>`,
+            sleep:    `<svg width="XSX" height="XSX" viewBox="0 0 16 16" fill="currentColor"><path d="M14 8.5A6 6 0 1 1 7.5 2A4.7 4.7 0 0 0 14 8.5z"/></svg>`,
+            list:     `<svg width="XSX" height="XSX" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="12" height="12" rx="2"/><line x1="5" y1="5.5" x2="11" y2="5.5"/><line x1="5" y1="8" x2="11" y2="8"/><line x1="5" y1="10.5" x2="8" y2="10.5"/></svg>`,
+            pin:      `<svg width="XSX" height="XSX" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2h10v12l-5-3-5 3z"/></svg>`,
+            cal_days: `<svg width="XSX" height="XSX" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="12" rx="1.5"/><line x1="10" y1="1" x2="10" y2="5"/><line x1="6" y1="1" x2="6" y2="5"/><line x1="2" y1="7" x2="14" y2="7"/><line x1="5" y1="10.5" x2="11" y2="10.5"/><line x1="5" y1="13" x2="9" y2="13"/></svg>`,
+            search:   `<svg width="XSX" height="XSX" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="6.5" cy="6.5" r="5"/><line x1="10" y1="10" x2="14" y2="14"/></svg>`,
+            check_s:  `<svg width="XSX" height="XSX" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2.5 8 6.5 12 13.5 4"/></svg>`,
+            minus_s:  `<svg width="XSX" height="XSX" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="8" x2="13" y2="8"/></svg>`,
+            close_s:  `<svg width="XSX" height="XSX" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3.5" y1="3.5" x2="12.5" y2="12.5"/><line x1="12.5" y1="3.5" x2="3.5" y2="12.5"/></svg>`,
+        };
+        const gico = (id, s=16) => (SVGICONS[id]||'').replace(/XSX/g, s);
+
+        const EVENT_TYPES = [
+            {id:"meeting", label:"Reunión",   color:"#6A8A62"},
+            {id:"focus",   label:"Enfoque",   color:"#7A8B99"},
+            {id:"break",   label:"Descanso",  color:"#D4A373"},
+            {id:"meal",    label:"Comida",    color:"#8C9E9D"},
+            {id:"exercise",label:"Ejercicio", color:"#A39171"},
+            {id:"personal",label:"Personal",  color:"#8F9A86"},
+            {id:"other",   label:"Otro",      color:"#9E9689"},
+        ];
+        const DURATIONS = [{mins:15,label:"15 min"},{mins:30,label:"30 min"},{mins:45,label:"45 min"},{mins:60,label:"1 hora"},{mins:90,label:"1h 30min"},{mins:120,label:"2 horas"},{mins:180,label:"3 horas"}];
+        const DAYS = ["Lun","Mar","Mié","Jue","Vie","Sáb","Dom"];
+        const MONTHS = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+        const MONTHS_LONG = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+
+        // ── HELPERS ─────────────────────────────────────────────────────────────────
+        const toStr = (d=new Date()) => { const p=n=>n<10?'0'+n:n; return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`; };
+        const todayStr = toStr();
+        const weekDatesForOffset = (off=0) => { const n=new Date(); n.setDate(n.getDate()+off*7); const dow=n.getDay(); const m=new Date(n); m.setDate(n.getDate()-(dow===0?6:dow-1)); m.setHours(0,0,0,0); return Array.from({length:7},(_,i)=>{const d=new Date(m);d.setDate(m.getDate()+i);return toStr(d);}); };
+        const weekKeyForOffset = (off=0) => { const d=new Date(); d.setDate(d.getDate()+off*7); const y=d.getFullYear(); const s=new Date(y,0,1); const w=Math.ceil(((d-s)/86400000+s.getDay()+1)/7); return `${y}-W${String(w).padStart(2,'0')}`; };
+        const calcStreak = (id,comp) => { let s=0; const d=new Date(); d.setHours(0,0,0,0); if(!comp[toStr(d)]?.includes(id)) d.setDate(d.getDate()-1); for(let i=0;i<365;i++){if(!comp[toStr(d)]?.includes(id))break;s++;d.setDate(d.getDate()-1);}return s; };
+        const fmtShort = str => { const d=new Date(str+"T12:00:00"); return `${d.getDate()} ${MONTHS[d.getMonth()]}`; };
+
+        // Sueño: de la noche anterior al despertar de hoy
+        const calcSleepHours = (prevBedtime, wakeUp) => {
+            const [bH,bM]=prevBedtime.split(':').map(Number);
+            const [wH,wM]=wakeUp.split(':').map(Number);
+            let bMins=bH*60+bM, wMins=wH*60+wM+24*60;
+            if(bH<4) bMins+=24*60;
+            const sleepMins=wMins-bMins;
+            if(sleepMins<=0||sleepMins>20*60) return '—';
+            const h=Math.floor(sleepMins/60),m=sleepMins%60;
+            return m>0?`${h}h ${m}min`:`${h}h`;
+        };
+        const fmtDuration = mins => { if(mins<60)return `${mins} min`; const h=Math.floor(mins/60),m=mins%60; return m?`${h}h ${m}min`:`${h}h`; };
+        const fmt12 = t => { const [h,m]=t.split(':').map(Number); return `${h%12||12}:${String(m).padStart(2,'0')} ${h>=12?'PM':'AM'}`; };
+        const evType = id => EVENT_TYPES.find(t=>t.id===id)||EVENT_TYPES[EVENT_TYPES.length-1];
+
+        // ── ESTADO ──────────────────────────────────────────────────────────────────
+        const State = {
+            tab:"today",
+            habits:   JSON.parse(localStorage.getItem("hbt3")   ||"[]"),
+            comp:     JSON.parse(localStorage.getItem("cmp3")   ||"{}"),
+            plans:    JSON.parse(localStorage.getItem("pln3")   ||"{}"),
+            dayPlans: JSON.parse(localStorage.getItem("dayplns")||"{}"),
+            weekOffset:0, dayOffset:0,
+            addForm:{show:false,name:"",emoji:"☕",color:COLORS[0]},
+            dayForm:{show:false,title:"",time:"09:00",type:"meeting",duration:60,notes:""},
+            deleteConfirm:null,
+        };
+        const saveData = () => {
+            localStorage.setItem("hbt3",   JSON.stringify(State.habits));
+            localStorage.setItem("cmp3",   JSON.stringify(State.comp));
+            localStorage.setItem("pln3",   JSON.stringify(State.plans));
+            localStorage.setItem("dayplns",JSON.stringify(State.dayPlans));
+        };
+
+        // ── ACCIONES ────────────────────────────────────────────────────────────────
+        window.Actions = {
+            // Cambio de pestaña: scroll a top para iOS/iPad
+            setTab: t => {
+                State.tab=t; State.deleteConfirm=null; render();
+                requestAnimationFrame(()=>window.scrollTo(0,0));
+            },
+            toggleHabit: id => {
+                const cur=[...(State.comp[todayStr]||[])];
+                const i=cur.indexOf(id); if(i>-1)cur.splice(i,1);else cur.push(id);
+                State.comp[todayStr]=cur; saveData(); render();
+            },
+            toggleAddForm:()=>{State.addForm.show=!State.addForm.show;render();},
+            updateDraftName:v=>{State.addForm.name=v;},
+            setDraftEmoji:e=>{State.addForm.emoji=e;render();},
+            setDraftColor:c=>{State.addForm.color=c;render();},
+            addHabit:()=>{
+                const name=State.addForm.name.trim();if(!name)return;
+                State.habits.push({id:Date.now().toString(),name,emoji:State.addForm.emoji,color:State.addForm.color});
+                State.addForm={show:false,name:"",emoji:"☕",color:COLORS[0]};
+                saveData();render();
+            },
+            deleteHabit:id=>{
+                if(State.deleteConfirm===id){State.habits=State.habits.filter(h=>h.id!==id);State.deleteConfirm=null;saveData();render();}
+                else{State.deleteConfirm=id;render();}
+            },
+            cancelDelete:()=>{State.deleteConfirm=null;render();},
+            setWeekOffset:o=>{State.weekOffset=o;render();},
+            getPlan:()=>{const wk=weekKeyForOffset(State.weekOffset);if(!State.plans[wk])State.plans[wk]={focus:"",goals:["","",""],days:{},review:{g:[null,null,null],notes:""}};return State.plans[wk];},
+            updatePlan:patch=>{const wk=weekKeyForOffset(State.weekOffset);State.plans[wk]={...Actions.getPlan(),...patch};saveData();},
+            updatePlanGoal:(idx,val)=>{const p=Actions.getPlan();p.goals[idx]=val;Actions.updatePlan({goals:p.goals});},
+            updatePlanDay:(day,val)=>{const p=Actions.getPlan();p.days[day]=val;Actions.updatePlan({days:p.days});},
+            updatePlanReviewG:(idx,val)=>{const p=Actions.getPlan();p.review.g[idx]=val;Actions.updatePlan({review:p.review});render();},
+            updatePlanReviewNotes:val=>{const p=Actions.getPlan();p.review.notes=val;Actions.updatePlan({review:p.review});},
+            getDayStr:()=>{const d=new Date();d.setDate(d.getDate()+State.dayOffset);return toStr(d);},
+            getDayPlan:()=>{const ds=Actions.getDayStr();if(!State.dayPlans[ds])State.dayPlans[ds]={wakeUp:"07:00",bedtime:"23:00",events:[]};return State.dayPlans[ds];},
+            setDayOffset:o=>{State.dayOffset=o;render();},
+            // Selector de hora con <select> — compatible con iOS/iPad sin cierre prematuro
+            updateDayTimePart:(dateStr,field,part,val)=>{
+                if(!State.dayPlans[dateStr])State.dayPlans[dateStr]={wakeUp:"07:00",bedtime:"23:00",events:[]};
+                const [h,m]=(State.dayPlans[dateStr][field]||"07:00").split(':');
+                State.dayPlans[dateStr][field]=part==='h'?`${String(val).padStart(2,'0')}:${m}`:`${h}:${String(val).padStart(2,'0')}`;
+                saveData();render();
+            },
+            toggleDayForm:()=>{State.dayForm.show=!State.dayForm.show;render();},
+            setDayFormField:(field,val)=>{State.dayForm[field]=val;render();},
+            updateDayFormTitle:val=>{State.dayForm.title=val;},
+            updateDayFormNotes:val=>{State.dayForm.notes=val;},
+            addEvent:()=>{
+                const{title,time,type,duration,notes}=State.dayForm;if(!title.trim())return;
+                const p=Actions.getDayPlan();
+                p.events.push({id:Date.now().toString(),title:title.trim(),time,type,duration,notes});
+                p.events.sort((a,b)=>a.time.localeCompare(b.time));
+                State.dayForm={show:false,title:"",time:"09:00",type:"meeting",duration:60,notes:""};
+                saveData();render();
+            },
+            deleteEvent:id=>{const p=Actions.getDayPlan();p.events=p.events.filter(e=>e.id!==id);saveData();render();},
+        };
+
+        // ── HOY ─────────────────────────────────────────────────────────────────────
+        const renderToday = () => {
+            const tc=State.comp[todayStr]||[];
+            const pct=State.habits.length?Math.round(tc.length/State.habits.length*100):0;
+            const now=new Date();
+            const dn=["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"][now.getDay()];
+            const gr=pct===100?"Día completado.":pct>=50?"Buen progreso hoy.":"Comenzando el día.";
+            let html=`<div class="container">
+                <div style="margin-bottom:28px;padding-top:10px;">
+                    <div class="sans" style="font-size:12px;color:var(--mu);font-weight:600;letter-spacing:1px;text-transform:uppercase;">${dn}, ${now.getDate()} de ${MONTHS_LONG[now.getMonth()]}</div>
+                    <div style="font-size:30px;font-weight:400;margin-top:8px;line-height:1.2;">${gr}</div>
+                </div>
+                <div class="card" style="padding:22px;margin-bottom:24px;">
+                    <div class="flex justify-between items-center" style="margin-bottom:14px;">
+                        <span class="sans" style="font-size:12px;color:var(--mu);font-weight:600;letter-spacing:0.5px;">PROGRESO</span>
+                        <span class="sans" style="font-size:26px;font-weight:600;color:var(--accent);">${pct}<span style="font-size:16px;font-weight:400;">%</span></span>
+                    </div>
+                    <div style="height:8px;border-radius:4px;background:var(--bg3);overflow:hidden;"><div style="height:100%;border-radius:4px;width:${pct}%;background:var(--accent);transition:width 0.8s ease;"></div></div>
+                    <div class="sans" style="margin-top:12px;font-size:13px;color:var(--mu);font-weight:500;">${tc.length} de ${State.habits.length} hábitos completados</div>
+                </div>`;
+            if(!State.habits.length) html+=`<div class="card" style="text-align:center;padding:50px 20px;color:var(--mu);"><div style="font-size:32px;margin-bottom:16px;opacity:0.6;">🌿</div><div style="font-size:16px;line-height:1.6;">No hay hábitos configurados.<br/>Dirígete a la pestaña de Hábitos.</div></div>`;
+            State.habits.forEach(h=>{
+                const done=tc.includes(h.id); const s=calcStreak(h.id,State.comp);
+                html+=`<div class="card flex items-center" onclick="Actions.toggleHabit('${h.id}')" style="cursor:pointer;border:1.5px solid ${done?h.color:'var(--brd)'};background:${done?h.color+'0A':'var(--bg2)'};transition:all 0.3s;gap:16px;padding:18px 20px;user-select:none;">
+                    <div style="width:46px;height:46px;border-radius:12px;background:${done?h.color+'33':'var(--bg3)'};display:flex;align-items:center;justify-content:center;font-size:24px;">${h.emoji}</div>
+                    <div style="flex:1;"><div style="font-size:17px;color:${done?h.color:'var(--tx)'};font-weight:${done?'600':'500'};">${h.name}</div>${s>0?`<div class="sans" style="font-size:12px;color:var(--mu);margin-top:4px;">🔥 ${s} día${s!==1?'s':''} seguidos</div>`:''}</div>
+                    <div style="width:28px;height:28px;border-radius:50%;border:2px solid ${done?h.color:'var(--brd)'};background:${done?h.color:'transparent'};display:flex;align-items:center;justify-content:center;flex-shrink:0;">${done?`<span style="color:#fff;font-size:15px;font-weight:bold;">✓</span>`:''}</div>
+                </div>`;
+            });
+            return html+"</div>";
+        };
+
+        // ── HÁBITOS ─────────────────────────────────────────────────────────────────
+        const renderHabits = () => {
+            let html=`<div class="container">
+                <div class="flex justify-between items-center" style="margin-bottom:24px;padding-top:10px;">
+                    <div style="font-size:28px;font-weight:400;">Mis Hábitos</div>
+                    <button class="btn sans" onclick="Actions.toggleAddForm()" style="background:${State.addForm.show?'var(--bg3)':'var(--accent)'};color:${State.addForm.show?'var(--tx)':'#fff'};border:1px solid ${State.addForm.show?'var(--brd)':'transparent'};border-radius:12px;padding:10px 18px;font-weight:600;font-size:14px;">${State.addForm.show?"Cancelar":"Crear"}</button>
+                </div>`;
+            if(State.addForm.show) html+=`<div class="card" style="border:1.5px solid var(--accent);margin-bottom:24px;padding:24px;">
+                <div class="sans" style="font-weight:600;margin-bottom:16px;font-size:15px;">Nuevo hábito</div>
+                <input class="inp" value="${State.addForm.name}" oninput="Actions.updateDraftName(this.value)" placeholder="Ej. Leer 20 páginas..." style="margin-bottom:24px;"/>
+                <div style="margin-bottom:24px;"><div class="sans" style="font-size:11px;color:var(--mu);font-weight:700;margin-bottom:12px;letter-spacing:0.5px;">EMOJI</div><div class="flex" style="flex-wrap:wrap;gap:8px;">${EMOJIS.map(e=>`<button class="btn" onclick="Actions.setDraftEmoji('${e}')" style="width:42px;height:42px;border-radius:10px;border:2px solid ${State.addForm.emoji===e?'var(--tx)':'var(--brd)'};background:${State.addForm.emoji===e?'var(--bg3)':'transparent'};font-size:20px;">${e}</button>`).join('')}</div></div>
+                <div style="margin-bottom:28px;"><div class="sans" style="font-size:11px;color:var(--mu);font-weight:700;margin-bottom:12px;letter-spacing:0.5px;">COLOR</div><div class="flex" style="gap:12px;flex-wrap:wrap;">${COLORS.map(c=>`<button class="btn" onclick="Actions.setDraftColor('${c}')" style="width:36px;height:36px;border-radius:50%;background:${c};border:3px solid ${State.addForm.color===c?'var(--tx)':'transparent'};transform:${State.addForm.color===c?'scale(1.1)':'scale(1)'};"></button>`).join('')}</div></div>
+                <button class="btn sans" onclick="Actions.addHabit()" style="background:var(--accent);color:#fff;border-radius:12px;padding:14px 0;font-weight:600;font-size:16px;width:100%;">Guardar</button>
+            </div>`;
+            if(!State.habits.length&&!State.addForm.show) html+=`<div class="card" style="text-align:center;padding:50px 20px;color:var(--mu);"><div style="font-size:32px;margin-bottom:16px;opacity:0.6;">🌱</div><div style="font-size:16px;line-height:1.6;">Agrega rutinas y tareas diarias<br/>para realizar un seguimiento.</div></div>`;
+            State.habits.forEach(h=>{
+                const s=calcStreak(h.id,State.comp);
+                const d30=Array.from({length:30},(_,i)=>{const d=new Date();d.setDate(d.getDate()-i);return toStr(d);}).filter(k=>State.comp[k]?.includes(h.id)).length;
+                const delBtn=State.deleteConfirm===h.id
+                    ?`<div style="display:flex;gap:5px;flex-shrink:0;"><button class="btn sans" onclick="Actions.deleteHabit('${h.id}')" style="background:#ef444418;border:1.5px solid #ef444488;border-radius:8px;color:#ef4444;font-size:11px;padding:7px 10px;font-weight:600;white-space:nowrap;">Confirmar</button><button class="btn sans" onclick="Actions.cancelDelete()" style="background:var(--bg3);border:1.5px solid var(--brd);border-radius:8px;color:var(--mu);font-size:12px;padding:7px 10px;font-weight:600;">✕</button></div>`
+                    :`<button class="btn" onclick="Actions.deleteHabit('${h.id}')" style="background:var(--bg3);border-radius:10px;color:var(--mu);font-size:12px;padding:8px 12px;font-weight:600;flex-shrink:0;">Eliminar</button>`;
+                html+=`<div class="card flex items-center" style="gap:16px;padding:16px 20px;">
+                    <div style="width:48px;height:48px;border-radius:14px;background:${h.color}1A;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">${h.emoji}</div>
+                    <div style="flex:1;"><div style="font-size:16px;font-weight:500;margin-bottom:4px;">${h.name}</div><div class="sans" style="font-size:13px;color:var(--mu);">${s>0?`🔥 ${s} días`:''} · ${d30}/30 días</div></div>
+                    ${delBtn}
+                </div>`;
+            });
+            return html+"</div>";
+        };
+
+        // ── AGENDA ──────────────────────────────────────────────────────────────────
+        const renderDay = () => {
+            const ds  = Actions.getDayStr();
+            const p   = Actions.getDayPlan();
+            const d   = new Date(); d.setDate(d.getDate()+State.dayOffset);
+            const dn  = ["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"][d.getDay()];
+            const lbl = `${dn}, ${d.getDate()} de ${MONTHS_LONG[d.getMonth()]}`;
+            const nav = {0:"Hoy","-1":"Ayer",1:"Mañana"}[State.dayOffset] || dn;
+            const f   = State.dayForm;
+
+            // Día anterior para calcular sueño
+            const prevDs = (() => { const pd=new Date(); pd.setDate(pd.getDate()+State.dayOffset-1); return toStr(pd); })();
+            if(!State.dayPlans[prevDs]) State.dayPlans[prevDs]={wakeUp:"07:00",bedtime:"23:00",events:[]};
+            const prev = State.dayPlans[prevDs];
+
+            const sleep = calcSleepHours(prev.bedtime, p.wakeUp);
+            const sleepH = sleep==='—' ? -1 : parseInt(sleep.split('h')[0]);
+            const sc = sleepH<0?'var(--mu)':sleepH>=7?'#6A8A62':sleepH>=6?'#D4A373':'#C1A58D';
+            const sn = sleep==='—'?'Sin datos':sleepH>=8?'Óptimo':sleepH>=7?'Suficiente':sleepH>=6?'Poco':'Insuf.';
+
+            // Selectores de hora compatibles con iOS (solo confirma al cerrar el picker)
+            const mkSel = (dateStr, field, fallback) => {
+                const cur = State.dayPlans[dateStr]?.[field] || fallback;
+                const [hS,mS] = cur.split(':');
+                const hN = parseInt(hS);
+                const mN = Math.round(parseInt(mS)/5)*5 % 60;
+                const hrs = Array.from({length:24},(_,i)=>i);
+                const mns = [0,5,10,15,20,25,30,35,40,45,50,55];
+                return `<div style="display:flex;align-items:center;gap:4px;">
+                    <select class="time-sel" onchange="Actions.updateDayTimePart('${dateStr}','${field}','h',this.value)">
+                        ${hrs.map(h=>`<option value="${h}" ${h===hN?'selected':''}>${String(h).padStart(2,'0')}</option>`).join('')}
+                    </select>
+                    <span style="font-size:18px;font-weight:700;color:var(--tx);flex-shrink:0;">:</span>
+                    <select class="time-sel" onchange="Actions.updateDayTimePart('${dateStr}','${field}','m',this.value)">
+                        ${mns.map(m=>`<option value="${m}" ${m===mN?'selected':''}>${String(m).padStart(2,'0')}</option>`).join('')}
+                    </select>
+                </div>`;
+            };
+
+            let html = `<div class="container">
+                <div class="flex justify-between items-center" style="margin-bottom:24px;padding-top:10px;">
+                    <button class="btn" onclick="Actions.setDayOffset(${State.dayOffset-1})" style="background:var(--bg2);border:1.5px solid var(--brd);border-radius:12px;padding:8px 16px;font-size:16px;">‹</button>
+                    <div style="text-align:center;">
+                        <div style="font-size:20px;font-weight:400;">${nav}</div>
+                        <div class="sans" style="font-size:11px;color:var(--mu);margin-top:4px;letter-spacing:0.5px;text-transform:uppercase;">${lbl}</div>
+                    </div>
+                    <button class="btn" onclick="Actions.setDayOffset(${State.dayOffset+1})" style="background:var(--bg2);border:1.5px solid var(--brd);border-radius:12px;padding:8px 16px;font-size:16px;">›</button>
+                </div>
+
+                <!-- Sueño: rediseñado para mayor claridad -->
+                <div class="card" style="padding:22px;margin-bottom:16px;">
+                    <div style="display:flex;align-items:center;gap:9px;font-size:15px;font-weight:600;margin-bottom:16px;">
+                        <span style="display:inline-flex;width:20px;height:20px;color:var(--accent);">${gico('clock',20)}</span>Sueño
+                    </div>
+                    <!-- Resumen visual: acostarse → horas → despertar -->
+                    <div style="display:flex;align-items:center;background:var(--bg3);border-radius:14px;padding:14px 8px;margin-bottom:16px;">
+                        <div style="flex:1;text-align:center;">
+                            <div style="display:flex;justify-content:center;margin-bottom:3px;color:var(--mu);">${gico('moon',18)}</div>
+                            <div class="sans" style="font-size:9px;color:var(--mu);letter-spacing:.5px;margin-bottom:2px;">ANOCHE</div>
+                            <div style="font-size:15px;font-weight:600;">${fmt12(prev.bedtime)}</div>
+                        </div>
+                        <div style="flex:1.3;text-align:center;padding:0 6px;">
+                            <div style="font-size:21px;font-weight:700;color:${sc};line-height:1.1;">${sleep}</div>
+                            <div style="height:4px;background:var(--brd);border-radius:2px;margin:5px 2px;overflow:hidden;">
+                                <div style="height:100%;border-radius:2px;background:${sc};width:${sleepH<0?0:Math.min(sleepH/9*100,100)}%;transition:width .5s;"></div>
+                            </div>
+                            <div class="sans" style="font-size:11px;color:${sc};font-weight:600;">${sn}</div>
+                        </div>
+                        <div style="flex:1;text-align:center;">
+                            <div style="display:flex;justify-content:center;margin-bottom:3px;color:var(--accent);">${gico('sunrise',18)}</div>
+                            <div class="sans" style="font-size:9px;color:var(--mu);letter-spacing:.5px;margin-bottom:2px;">HOY</div>
+                            <div style="font-size:15px;font-weight:600;">${fmt12(p.wakeUp)}</div>
+                        </div>
+                    </div>
+                    <!-- Selectores de hora (compatibles iOS/iPad) -->
+                    <div class="flex" style="gap:12px;">
+                        <div style="flex:1;">
+                            <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--mu);font-weight:700;letter-spacing:.5px;margin-bottom:8px;" class="sans">
+                                <span style="display:inline-flex;width:12px;height:12px;color:var(--mu);">${gico('moon',12)}</span>ACOSTARSE
+                            </div>
+                            ${mkSel(prevDs,'bedtime','23:00')}
+                        </div>
+                        <div style="flex:1;">
+                            <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--mu);font-weight:700;letter-spacing:.5px;margin-bottom:8px;" class="sans">
+                                <span style="display:inline-flex;width:12px;height:12px;color:var(--accent);">${gico('sunrise',12)}</span>DESPERTAR
+                            </div>
+                            ${mkSel(ds,'wakeUp','07:00')}
+                        </div>
+                    </div>
+                </div>`;
+
+            // Timeline
+            html+=`<div class="card" style="padding:22px;">
+                <div style="display:flex;align-items:center;gap:9px;font-size:15px;font-weight:600;margin-bottom:20px;">
+                    <span style="display:inline-flex;width:20px;height:20px;color:var(--accent);">${gico('list',20)}</span>Agenda del día
+                </div>
+                <div style="display:flex;align-items:center;gap:14px;margin-bottom:${p.events.length?'0':'16px'};">
+                    <div style="display:flex;flex-direction:column;align-items:center;width:36px;flex-shrink:0;">
+                        <div style="width:36px;height:36px;border-radius:50%;background:var(--accent-light);border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;color:var(--accent);">${gico('sunrise',20)}</div>
+                        ${p.events.length?`<div style="width:2px;height:16px;background:var(--brd);"></div>`:''}
+                    </div>
+                    <div><div style="font-size:15px;font-weight:600;color:var(--accent);">${fmt12(p.wakeUp)}</div><div class="sans" style="font-size:12px;color:var(--mu);">Despertar</div></div>
+                </div>`;
+            if(!p.events.length) html+=`<div style="border-left:2px dashed var(--brd);margin-left:17px;padding:20px 0 20px 20px;color:var(--mu);"><div class="sans" style="font-size:14px;font-style:italic;">Sin eventos. Agrega tu primera actividad.</div></div>`;
+            p.events.forEach((ev,idx)=>{
+                const t=evType(ev.type); const isLast=idx===p.events.length-1;
+                html+=`<div style="display:flex;gap:14px;">
+                    <div style="display:flex;flex-direction:column;align-items:center;width:36px;flex-shrink:0;">
+                        <div style="width:2px;${isLast?'height:20px':'flex:1;min-height:20px'};background:var(--brd);"></div>
+                        <div style="width:32px;height:32px;border-radius:50%;background:${t.color}22;border:2px solid ${t.color}66;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:${t.color};">${gico(t.id,15)}</div>
+                        ${!isLast?`<div style="width:2px;height:12px;background:var(--brd);"></div>`:''}
+                    </div>
+                    <div style="flex:1;background:${t.color}0A;border:1.5px solid ${t.color}33;border-radius:14px;padding:12px 14px;margin-top:8px;">
+                        <div class="flex justify-between items-center">
+                            <div style="flex:1;"><div style="font-size:15px;font-weight:500;">${ev.title}</div>
+                            <div class="sans" style="font-size:12px;color:var(--mu);margin-top:4px;">${fmt12(ev.time)} · ${fmtDuration(ev.duration)} · ${t.label}</div>
+                            ${ev.notes?`<div class="sans" style="font-size:12px;color:var(--mu);margin-top:5px;padding-top:5px;border-top:1px solid ${t.color}22;font-style:italic;">${ev.notes}</div>`:''}</div>
+                            <button class="btn" onclick="Actions.deleteEvent('${ev.id}')" style="background:transparent;color:var(--mu);font-size:20px;padding:0 4px;margin-left:8px;flex-shrink:0;line-height:1;">×</button>
+                        </div>
+                    </div>
+                </div>`;
+            });
+            html+=`<div style="display:flex;align-items:center;gap:14px;">
+                <div style="display:flex;flex-direction:column;align-items:center;width:36px;flex-shrink:0;">
+                    ${p.events.length?`<div style="width:2px;height:16px;background:var(--brd);"></div>`:''}
+                    <div style="width:36px;height:36px;border-radius:50%;background:var(--bg3);border:2px solid var(--brd);display:flex;align-items:center;justify-content:center;color:var(--mu);">${gico('moon',20)}</div>
+                </div>
+                <div><div style="font-size:15px;font-weight:600;color:var(--mu);">${fmt12(p.bedtime)}</div><div class="sans" style="font-size:12px;color:var(--mu);">Hora de dormir</div></div>
+            </div></div>`;
+            if(f.show) html+=`<div class="card" style="padding:22px;border:1.5px solid var(--accent);">
+                <div style="font-size:15px;font-weight:600;margin-bottom:16px;">Nuevo evento</div>
+                <input class="inp" value="${f.title}" oninput="Actions.updateDayFormTitle(this.value)" placeholder="Título del evento..." style="margin-bottom:12px;"/>
+                <div class="flex" style="gap:12px;margin-bottom:16px;">
+                    <div style="flex:1;"><div class="sans" style="font-size:10px;color:var(--mu);font-weight:700;margin-bottom:8px;letter-spacing:0.5px;">HORA</div>
+                    <input type="time" class="inp" value="${f.time}" onchange="Actions.setDayFormField('time',this.value)" style="text-align:center;"/></div>
+                    <div style="flex:1;"><div class="sans" style="font-size:10px;color:var(--mu);font-weight:700;margin-bottom:8px;letter-spacing:0.5px;">DURACIÓN</div>
+                    <select class="inp" onchange="Actions.setDayFormField('duration',parseInt(this.value))" style="cursor:pointer;appearance:none;text-align:center;">${DURATIONS.map(dur=>`<option value="${dur.mins}" ${f.duration===dur.mins?'selected':''}>${dur.label}</option>`).join('')}</select></div>
+                </div>
+                <div style="margin-bottom:16px;"><div class="sans" style="font-size:10px;color:var(--mu);font-weight:700;margin-bottom:10px;letter-spacing:0.5px;">TIPO</div>
+                <div class="flex" style="flex-wrap:wrap;gap:7px;">${EVENT_TYPES.map(t=>`<button class="btn sans" onclick="Actions.setDayFormField('type','${t.id}')" style="display:flex;align-items:center;gap:6px;padding:8px 11px;border-radius:10px;border:1.5px solid ${f.type===t.id?t.color:'var(--brd)'};background:${f.type===t.id?t.color+'22':'var(--bg3)'};color:${f.type===t.id?t.color:'var(--mu)'};font-size:12px;font-weight:${f.type===t.id?'600':'400'};"><span style="display:inline-flex;width:15px;height:15px;">${gico(t.id,15)}</span>${t.label}</button>`).join('')}</div></div>
+                <textarea class="inp ta" oninput="Actions.updateDayFormNotes(this.value)" placeholder="Notas opcionales..." style="margin-bottom:16px;min-height:52px;">${f.notes}</textarea>
+                <button class="btn sans" onclick="Actions.addEvent()" style="background:var(--accent);color:#fff;border-radius:12px;padding:14px 0;font-weight:600;font-size:16px;width:100%;">Guardar evento</button>
+            </div>`;
+            html+=`<button class="btn sans" onclick="Actions.toggleDayForm()" style="width:100%;background:${f.show?'var(--bg3)':'var(--accent)'};color:${f.show?'var(--tx)':'#fff'};border:${f.show?'1.5px solid var(--brd)':'none'};border-radius:14px;padding:16px 0;font-weight:600;font-size:16px;">${f.show?"Cancelar":"+ Agregar evento"}</button></div>`;
+            return html;
+        };
+
+        // ── SEMANA ──────────────────────────────────────────────────────────────────
+        const renderWeek = () => {
+            const wk=weekKeyForOffset(State.weekOffset);
+            const dates=weekDatesForOffset(State.weekOffset);
+            const isCur=State.weekOffset===0;
+            const p=Actions.getPlan();
+            const total=dates.reduce((s,d)=>s+(State.comp[d]?.length||0),0);
+            const ws=Math.round(total/(dates.length*(State.habits.length||1))*100);
+            let html=`<div class="container">
+                <div class="flex justify-between items-center" style="margin-bottom:24px;padding-top:10px;">
+                    <button class="btn" onclick="Actions.setWeekOffset(${State.weekOffset-1})" style="background:var(--bg2);border:1.5px solid var(--brd);border-radius:12px;padding:8px 16px;font-size:16px;">‹</button>
+                    <div style="text-align:center;">
+                        <div style="font-size:20px;font-weight:400;">${isCur?"Semana Actual":`Semana ${wk.split("-W")[1]}`}</div>
+                        <div class="sans" style="font-size:11px;color:var(--mu);margin-top:4px;letter-spacing:0.5px;text-transform:uppercase;">${fmtShort(dates[0])} — ${fmtShort(dates[6])}</div>
+                    </div>
+                    <button class="btn" onclick="Actions.setWeekOffset(${State.weekOffset+1})" style="background:var(--bg2);border:1.5px solid var(--brd);border-radius:12px;padding:8px 16px;font-size:16px;">›</button>
+                </div>
+                <div class="card flex items-center" style="gap:16px;padding:22px;margin-bottom:16px;">
+                    <div style="flex:1;"><div class="sans" style="font-size:11px;color:var(--mu);font-weight:600;letter-spacing:0.5px;">CUMPLIMIENTO SEMANAL</div>
+                    <div style="height:6px;border-radius:3px;background:var(--bg3);overflow:hidden;margin-top:8px;"><div style="height:100%;border-radius:3px;width:${ws}%;background:var(--accent);transition:width .5s;"></div></div></div>
+                    <div class="sans" style="font-size:22px;font-weight:500;min-width:48px;text-align:right;">${ws}%</div>
+                    ${!isCur?`<button class="btn sans" onclick="Actions.setWeekOffset(0)" style="background:var(--bg3);border:1px solid var(--brd);border-radius:8px;color:var(--tx);padding:6px 10px;font-size:11px;font-weight:600;">Hoy</button>`:''}
+                </div>
+                <div class="card" style="padding:22px;">
+                    <div class="flex items-center" style="gap:10px;margin-bottom:16px;">
+                        <span style="display:inline-flex;width:22px;height:22px;color:var(--accent);opacity:0.85;">${gico('pin',22)}</span>
+                        <span style="font-size:16px;font-weight:600;">Foco de la semana</span>
+                    </div>
+                    <textarea class="inp ta" onchange="Actions.updatePlan({focus:this.value})" placeholder="¿Cuál es tu prioridad principal?" style="margin-bottom:20px;background:transparent;">${p.focus}</textarea>
+                    <div class="sans" style="font-size:11px;color:var(--mu);font-weight:700;letter-spacing:0.5px;margin-bottom:10px;">OBJETIVOS CLAVE</div>
+                    ${[0,1,2].map(i=>`<input class="inp" value="${p.goals[i]||''}" onchange="Actions.updatePlanGoal(${i},this.value)" placeholder="Objetivo ${i+1}" style="margin-bottom:${i<2?8:0}px;background:transparent;padding:8px 10px;"/>`).join('')}
+                </div>
+                <div class="card" style="padding:22px;">
+                    <div class="flex items-center" style="gap:10px;margin-bottom:16px;">
+                        <span style="display:inline-flex;width:22px;height:22px;color:var(--accent);opacity:0.85;">${gico('cal_days',22)}</span>
+                        <span style="font-size:16px;font-weight:600;">Diario</span>
+                    </div>
+                    ${dates.map((d,i)=>{
+                        const isT=d===todayStr; const dc=State.comp[d]||[];
+                        let dH=`<div style="margin-bottom:12px;border-bottom:1px solid var(--bg3);padding-bottom:12px;">
+                            <div class="flex justify-between items-center" style="margin-bottom:8px;">
+                                <div class="sans" style="font-weight:${isT?'600':'400'};font-size:13px;color:${isT?'var(--tx)':'var(--mu)'};">
+                                    ${DAYS[i]} <span style="font-weight:400;font-size:11px;margin-left:4px;">${fmtShort(d)}</span>
+                                    ${isT?`<span style="font-size:9px;background:var(--accent);color:var(--bg2);border-radius:4px;padding:2px 6px;margin-left:6px;letter-spacing:0.5px;">HOY</span>`:''}
+                                </div>
+                                ${State.habits.length?`<div class="sans" style="font-size:11px;color:var(--mu);">${dc.length}/${State.habits.length}</div>`:''}
+                            </div>
+                            <textarea class="inp ta" onchange="Actions.updatePlanDay('${d}',this.value)" placeholder="Notas para este día..." style="min-height:40px;margin-bottom:${State.habits.length?10:0}px;background:transparent;"></textarea>`;
+                        if(State.habits.length){dH+=`<div class="flex" style="gap:6px;flex-wrap:wrap;">`;State.habits.forEach(h=>{const done=dc.includes(h.id);dH+=`<div title="${h.name}" style="width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:13px;background:${done?h.color+'1A':'var(--bg)'};border-radius:6px;border:1px solid ${done?h.color+'40':'var(--brd)'};opacity:${done?'1':'0.4'};">${h.emoji}</div>`;});dH+=`</div>`;}
+                        return dH+`</div>`;
+                    }).join('')}
+                </div>
+                <div class="card" style="padding:22px;">
+                    <div class="flex items-center" style="gap:10px;margin-bottom:16px;">
+                        <span style="display:inline-flex;width:22px;height:22px;color:var(--accent);opacity:0.85;">${gico('search',22)}</span>
+                        <span style="font-size:16px;font-weight:600;">Revisión</span>
+                    </div>`;
+            if(p.goals.some(g=>g.trim())){
+                html+=`<div class="sans" style="font-size:11px;color:var(--mu);font-weight:600;letter-spacing:0.5px;margin-bottom:12px;">EVALUACIÓN</div>`;
+                [0,1,2].forEach(i=>{
+                    if(!p.goals[i]?.trim())return;
+                    const val=p.review?.g?.[i];
+                    html+=`<div style="margin-bottom:16px;"><div style="font-size:14px;margin-bottom:8px;">${p.goals[i]}</div>
+                        <div class="flex" style="gap:8px;">${[["check_s","Sí","#6A8A62"],["minus_s","Parcial","#D4A373"],["close_s","No","#9E9689"]].map(([ic,lb,col])=>`
+                            <button class="btn sans" onclick="Actions.updatePlanReviewG(${i},'${lb}')" style="display:flex;align-items:center;justify-content:center;gap:5px;flex:1;background:${val===lb?col+'1A':'var(--bg3)'};border:1px solid ${val===lb?col:'transparent'};border-radius:8px;padding:8px 0;color:${val===lb?col:'var(--mu)'};font-size:12px;font-weight:${val===lb?'600':'500'};">
+                                <span style="display:inline-flex;width:14px;height:14px;">${gico(ic,14)}</span>${lb}
+                            </button>`).join('')}
+                        </div></div>`;
+                });
+            }
+            html+=`<div><div class="sans" style="font-size:11px;color:var(--mu);font-weight:600;letter-spacing:0.5px;margin-bottom:8px;">REFLEXIÓN</div>
+                <textarea class="inp ta" onchange="Actions.updatePlanReviewNotes(this.value)" placeholder="Anota tus pensamientos de la semana..." style="background:transparent;"></textarea>
+                </div></div></div>`;
+            return html;
+        };
+
+        // ── REPORTES ─────────────────────────────────────────────────────────────────
+        const renderStats = () => {
+            const d84=Array.from({length:84},(_,i)=>{const d=new Date();d.setDate(d.getDate()-83+i);return toStr(d);});
+            const l30=d84.slice(-30);
+            const op=State.habits.length?Math.round(l30.reduce((s,d)=>s+(State.comp[d]?.length||0),0)/(l30.length*State.habits.length)*100):0;
+            const bs=State.habits.length?Math.max(...State.habits.map(h=>calcStreak(h.id,State.comp))):0;
+            let html=`<div class="container">
+                <div style="font-size:30px;font-weight:400;margin-bottom:24px;padding-top:10px;">Reportes</div>
+                <div class="flex" style="gap:12px;margin-bottom:16px;">
+                    ${[[op+'%',"Tasa 30 días"],[State.habits.length,"Activos"],['🔥 '+bs,"Racha máx."]].map(([v,l])=>`<div class="card" style="flex:1;text-align:center;padding:18px 8px;"><div class="sans" style="font-size:22px;font-weight:500;">${v}</div><div class="sans" style="font-size:11px;color:var(--mu);margin-top:6px;">${l}</div></div>`).join('')}
+                </div>
+                <div class="card" style="padding:22px;">
+                    <div style="font-size:16px;font-weight:600;margin-bottom:16px;">Mapa de Actividad</div>
+                    <div class="grid-12">${Array.from({length:12},(_,w)=>`<div style="display:flex;flex-direction:column;gap:4px;">${d84.slice(w*7,w*7+7).map(d=>{const c=State.comp[d]||[];const pt=State.habits.length?c.length/State.habits.length:0;const a=pt===0?0.08:pt<0.4?0.3:pt<0.7?0.6:1;return `<div title="${fmtShort(d)}: ${c.length}/${State.habits.length}" style="height:14px;border-radius:3px;background:rgba(106,138,98,${a});border:${d===todayStr?'1.5px solid var(--tx)':'none'};box-sizing:border-box;"></div>`;}).join('')}</div>`).join('')}</div>
+                    <div class="flex items-center" style="gap:6px;margin-top:12px;font-size:10px;color:var(--mu);">
+                        <span>Menos</span>${[0.08,0.3,0.6,1].map(a=>`<div style="width:14px;height:14px;border-radius:3px;background:rgba(106,138,98,${a});"></div>`).join('')}<span>Más</span>
+                    </div>
+                </div>`;
+            if(!State.habits.length) html+=`<div class="card" style="text-align:center;padding:40px;color:var(--mu);"><div style="font-size:30px;margin-bottom:10px;opacity:0.6;">📊</div><div>Sin datos para mostrar.</div></div>`;
+            State.habits.forEach(h=>{
+                const s=calcStreak(h.id,State.comp);
+                const dn=d84.filter(d=>State.comp[d]?.includes(h.id)).length;
+                const pt=Math.round(dn/84*100);
+                let ms=0,cs=0;const di=new Date();di.setHours(0,0,0,0);
+                for(let i=0;i<365;i++){const k=toStr(di);if(State.comp[k]?.includes(h.id)){cs++;ms=Math.max(ms,cs);}else cs=0;di.setDate(di.getDate()-1);}
+                html+=`<div class="card" style="padding:22px;">
+                    <div class="flex items-center" style="gap:16px;margin-bottom:16px;">
+                        <div style="width:44px;height:44px;border-radius:12px;background:${h.color}1A;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">${h.emoji}</div>
+                        <div style="flex:1;"><div style="font-size:17px;font-weight:500;">${h.name}</div></div>
+                    </div>
+                    <div class="flex" style="gap:10px;margin-bottom:16px;">${[[pt+'%',"Cumplimiento"],['🔥 '+s,"Racha actual"],['⭐ '+ms,"Máxima"]].map(([v,l])=>`<div style="flex:1;background:var(--bg3);border-radius:10px;padding:12px 0;text-align:center;"><div class="sans" style="font-size:16px;font-weight:500;">${v}</div><div class="sans" style="font-size:10px;color:var(--mu);margin-top:4px;">${l}</div></div>`).join('')}</div>
+                    <div class="flex" style="gap:2px;">${d84.slice(-28).map(d=>`<div style="flex:1;height:6px;border-radius:2px;background:${State.comp[d]?.includes(h.id)?h.color:'var(--bg3)'};opacity:0.8;"></div>`).join('')}</div>
+                </div>`;
+            });
+            return html+"</div>";
+        };
+
+        // ── NAV ──────────────────────────────────────────────────────────────────────
+        const getNavIcon = id => {
+            const p='viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';
+            if(id==='today') return `<svg ${p}><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
+            if(id==='day')   return `<svg ${p}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
+            if(id==='habits')return `<svg ${p}><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>`;
+            if(id==='week')  return `<svg ${p}><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`;
+            if(id==='stats') return `<svg ${p}><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`;
+            return '';
+        };
+        const renderNav = () => `<nav>${[["today","Hoy"],["day","Agenda"],["habits","Hábitos"],["week","Semana"],["stats","Reportes"]].map(([id,lb])=>`<button class="nav-btn ${State.tab===id?'active':''}" onclick="Actions.setTab('${id}')"><span class="nav-icon">${getNavIcon(id)}</span>${lb}</button>`).join('')}</nav>`;
+
+        // ── RENDER ───────────────────────────────────────────────────────────────────
+        const render = () => {
+            let v="";
+            if     (State.tab==="today") v=renderToday();
+            else if(State.tab==="day")   v=renderDay();
+            else if(State.tab==="habits")v=renderHabits();
+            else if(State.tab==="week")  v=renderWeek();
+            else if(State.tab==="stats") v=renderStats();
+            document.getElementById("app").innerHTML=v+renderNav();
+        };
+        render();
+    </script>
+</body>
+</html>
