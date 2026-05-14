@@ -555,16 +555,68 @@
     }
     </script>
 <div id="infoModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.3); backdrop-filter:blur(5px); -webkit-backdrop-filter:blur(5px); z-index:3000; align-items:center; justify-content:center; padding:20px;">
-        <div style="background:var(--bg); padding:30px; border-radius:24px; max-width:340px; width:100%; box-shadow:0 10px 40px rgba(0,0,0,0.1); position:relative;">
+        <div style="background:var(--bg); padding:30px; border-radius:24px; max-width:350px; width:100%; max-height:85vh; overflow-y:auto; box-shadow:0 10px 40px rgba(0,0,0,0.1); position:relative;">
             <button onclick="toggleInfo()" style="position:absolute; top:20px; right:20px; background:none; border:none; font-size:24px; font-weight:300; color:#8e8e8e; cursor:pointer;">&times;</button>
             
-            <h3 style="margin-top:0; font-size:16px; font-weight:600; color:#1D1D1F; letter-spacing:0.5px;">SOBRE TELOS</h3>
-            <p style="font-size:14px; line-height:1.6; color:#666; margin-bottom:10px;">Telos es tu espacio minimalista diseñado para recuperar el enfoque y organizar tu día sin distracciones.</p>
-            <ul style="font-size:14px; line-height:1.6; color:#666; padding-left:20px; margin:0;">
-                <li style="margin-bottom:8px;"><b>Agenda:</b> Planifica tus bloques de tiempo.</li>
-                <li style="margin-bottom:8px;"><b>Hábitos:</b> Construye consistencia diaria.</li>
-                <li><b>Reportes:</b> Mide tu progreso sin presiones.</li>
-            </ul>
+            <h3 style="margin-top:0; font-size:15px; font-weight:600; color:#1D1D1F; letter-spacing:1px;">SOBRE TELOS</h3>
+            
+            <p style="font-size:13.5px; line-height:1.6; color:#555; margin-bottom:24px;">
+                Telos es un espacio para recuperar tu enfoque y liberar tu mente. Trabajamos bajo el principio de que <b>menos es más</b>: reducir el ruido visual te da mayor claridad. Tangibilizar tus metas te quita un peso de encima, porque organizarse no es solo para ser productivo, sino para ganar libertad y dedicarle tiempo a lo que realmente amas en la vida.
+            </p>
+
+            <div style="display:flex; flex-direction:column; gap:16px;">
+                
+                <div style="display:flex; gap:12px; align-items:flex-start;">
+                    <div style="color:var(--accent); width:20px; height:20px; flex-shrink:0; margin-top:2px;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                    </div>
+                    <div>
+                        <div style="font-size:14px; font-weight:600; color:#1D1D1F; margin-bottom:2px;">Hoy</div>
+                        <div style="font-size:13px; line-height:1.5; color:#666;">Muestra tus hábitos diarios y te ayuda a visualizar rápidamente lo que te falta.</div>
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:12px; align-items:flex-start;">
+                    <div style="color:var(--accent); width:20px; height:20px; flex-shrink:0; margin-top:2px;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    <div>
+                        <div style="font-size:14px; font-weight:600; color:#1D1D1F; margin-bottom:2px;">Agenda</div>
+                        <div style="font-size:13px; line-height:1.5; color:#666;">Planifica tu día y quítate el peso mental de estar recordando qué debes hacer.</div>
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:12px; align-items:flex-start;">
+                    <div style="color:var(--accent); width:20px; height:20px; flex-shrink:0; margin-top:2px;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                    </div>
+                    <div>
+                        <div style="font-size:14px; font-weight:600; color:#1D1D1F; margin-bottom:2px;">Hábitos</div>
+                        <div style="font-size:13px; line-height:1.5; color:#666;">La lista maestra de tus rutinas. Puedes verlos todos, crearlos o eliminarlos.</div>
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:12px; align-items:flex-start;">
+                    <div style="color:var(--accent); width:20px; height:20px; flex-shrink:0; margin-top:2px;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    </div>
+                    <div>
+                        <div style="font-size:14px; font-weight:600; color:#1D1D1F; margin-bottom:2px;">Semana</div>
+                        <div style="font-size:13px; line-height:1.5; color:#666;">Planifica tu semana, deja tus meditaciones y expectativas. Libera carga mental y anclate al presente.</div>
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:12px; align-items:flex-start;">
+                    <div style="color:var(--accent); width:20px; height:20px; flex-shrink:0; margin-top:2px;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                    </div>
+                    <div>
+                        <div style="font-size:14px; font-weight:600; color:#1D1D1F; margin-bottom:2px;">Reportes</div>
+                        <div style="font-size:13px; line-height:1.5; color:#666;">Observa tus resultados para mantener la motivación. Lo relevante es ser cada día mejor.</div>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </div>
 </body>
