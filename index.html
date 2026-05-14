@@ -41,9 +41,16 @@
 <body>
 
     <!-- Header con logo profesional (medallón minimalista) -->
-    <header style="position:fixed;top:0;left:0;right:0;height:52px;background:rgba(245,243,236,0.95);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid rgba(223,217,201,0.8);display:flex;align-items:center;justify-content:center;gap:10px;z-index:200;padding-top:env(safe-area-inset-top);">
-        <!-- Logo: busto en medallón circular -->
+    <header style="position:fixed;top:0;left:0;right:0;height:52px;background:rgba(245,243,236,0.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(223,217,201,0.8);display:flex;align-items:center;justify-content:center;z-index:200;padding-top:env(safe-area-inset-top);">
         <span style="font-size:12px;font-weight:600;letter-spacing:1.5px;padding-left:1.5px;color:#1D1D1F;font-family:-apple-system,sans-serif;text-transform:uppercase;">Telos</span>
+        
+        <button onclick="toggleInfo()" style="position:absolute; right:20px; background:none; border:none; cursor:pointer; color:#8e8e8e; display:flex; align-items:center; justify-content:center; padding:5px; transition:color 0.2s;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+        </button>
     </header>
 
     <div id="app"></div>
@@ -537,6 +544,28 @@
             document.getElementById("app").innerHTML=v+renderNav();
         };
         render();
+    // Función para mostrar/ocultar el modal de Info
+    function toggleInfo() {
+        const modal = document.getElementById('infoModal');
+        if (modal.style.display === 'none' || modal.style.display === '') {
+            modal.style.display = 'flex'; // Muestra el modal
+        } else {
+            modal.style.display = 'none'; // Oculta el modal
+        }
+    }
     </script>
+<div id="infoModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.3); backdrop-filter:blur(5px); -webkit-backdrop-filter:blur(5px); z-index:3000; align-items:center; justify-content:center; padding:20px;">
+        <div style="background:var(--bg); padding:30px; border-radius:24px; max-width:340px; width:100%; box-shadow:0 10px 40px rgba(0,0,0,0.1); position:relative;">
+            <button onclick="toggleInfo()" style="position:absolute; top:20px; right:20px; background:none; border:none; font-size:24px; font-weight:300; color:#8e8e8e; cursor:pointer;">&times;</button>
+            
+            <h3 style="margin-top:0; font-size:16px; font-weight:600; color:#1D1D1F; letter-spacing:0.5px;">SOBRE TELOS</h3>
+            <p style="font-size:14px; line-height:1.6; color:#666; margin-bottom:10px;">Telos es tu espacio minimalista diseñado para recuperar el enfoque y organizar tu día sin distracciones.</p>
+            <ul style="font-size:14px; line-height:1.6; color:#666; padding-left:20px; margin:0;">
+                <li style="margin-bottom:8px;"><b>Agenda:</b> Planifica tus bloques de tiempo.</li>
+                <li style="margin-bottom:8px;"><b>Hábitos:</b> Construye consistencia diaria.</li>
+                <li><b>Reportes:</b> Mide tu progreso sin presiones.</li>
+            </ul>
+        </div>
+    </div>
 </body>
 </html>
