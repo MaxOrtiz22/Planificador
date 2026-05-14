@@ -116,9 +116,15 @@
             comp:     JSON.parse(localStorage.getItem("cmp3")   ||"{}"),
             plans:    JSON.parse(localStorage.getItem("pln3")   ||"{}"),
             dayPlans: JSON.parse(localStorage.getItem("dayplns")||"{}"),
+            eventTypes: JSON.parse(localStorage.getItem("telos_event_types")) || [
+                { id: 'focus', label: 'Enfoque', color: '#6A8A62' },
+                { id: 'rest', label: 'Descanso', color: '#D4A373' },
+                { id: 'work', label: 'Trabajo', color: '#7A8B99' }
+            ],
+            activeFilter: 'all',
             weekOffset:0, dayOffset:0,
             addForm:{show:false,name:"",emoji:"☕",color:COLORS[0]},
-            dayForm:{show:false,title:"",time:"09:00",type:"meeting",duration:60,notes:""},
+            dayForm:{show:false,title:"",time:"09:00",endTime:"10:00",type:"focus",notes:""},
             deleteConfirm:null,
         };
         const saveData = () => {
@@ -126,34 +132,20 @@
             localStorage.setItem("cmp3",   JSON.stringify(State.comp));
             localStorage.setItem("pln3",   JSON.stringify(State.plans));
             localStorage.setItem("dayplns",JSON.stringify(State.dayPlans));
+            localStorage.setItem("telos_event_types", JSON.stringify(State.eventTypes));
         };
 
         // ── ACCIONES ────────────────────────────────────────────────────────────────
+       // ── ACCIONES ────────────────────────────────────────────────────────────────
         window.Actions = {
-            // Cambio de pestaña: scroll a top para iOS/iPad
-            setTab: t => {
-                State.tab=t; State.deleteConfirm=null; render();
-                requestAnimationFrame(()=>window.scrollTo(0,0));
-            },
-            toggleHabit: id => {
-                const cur=[...(State.comp[todayStr]||[])];
-                const i=cur.indexOf(id); if(i>-1)cur.splice(i,1);else cur.push(id);
-                State.comp[todayStr]=cur; saveData(); render();
-            },
+            setTab: t => { State.tab=t; State.deleteConfirm=null; render(); requestAnimationFrame(()=>window.scrollTo(0,0)); },
+            toggleHabit: id => { const cur=[...(State.comp[todayStr]||[])]; const i=cur.indexOf(id); if(i>-1)cur.splice(i,1);else cur.push(id); State.comp[todayStr]=cur; saveData(); render(); },
             toggleAddForm:()=>{State.addForm.show=!State.addForm.show;render();},
             updateDraftName:v=>{State.addForm.name=v;},
             setDraftEmoji:e=>{State.addForm.emoji=e;render();},
             setDraftColor:c=>{State.addForm.color=c;render();},
-            addHabit:()=>{
-                const name=State.addForm.name.trim();if(!name)return;
-                State.habits.push({id:Date.now().toString(),name,emoji:State.addForm.emoji,color:State.addForm.color});
-                State.addForm={show:false,name:"",emoji:"☕",color:COLORS[0]};
-                saveData();render();
-            },
-            deleteHabit:id=>{
-                if(State.deleteConfirm===id){State.habits=State.habits.filter(h=>h.id!==id);State.deleteConfirm=null;saveData();render();}
-                else{State.deleteConfirm=id;render();}
-            },
+            addHabit:()=>{ const name=State.addForm.name.trim();if(!name)return; State.habits.push({id:Date.now().toString(),name,emoji:State.addForm.emoji,color:State.addForm.color}); State.addForm={show:false,name:"",emoji:"☕",color:COLORS[0]}; saveData();render(); },
+            deleteHabit:id=>{ if(State.deleteConfirm===id){State.habits=State.habits.filter(h=>h.id!==id);State.deleteConfirm=null;saveData();render();} else{State.deleteConfirm=id;render();} },
             cancelDelete:()=>{State.deleteConfirm=null;render();},
             setWeekOffset:o=>{State.weekOffset=o;render();},
             getPlan:()=>{const wk=weekKeyForOffset(State.weekOffset);if(!State.plans[wk])State.plans[wk]={focus:"",goals:["","",""],days:{},review:{g:[null,null,null],notes:""}};return State.plans[wk];},
@@ -165,26 +157,41 @@
             getDayStr:()=>{const d=new Date();d.setDate(d.getDate()+State.dayOffset);return toStr(d);},
             getDayPlan:()=>{const ds=Actions.getDayStr();if(!State.dayPlans[ds])State.dayPlans[ds]={wakeUp:"07:00",bedtime:"23:00",events:[]};return State.dayPlans[ds];},
             setDayOffset:o=>{State.dayOffset=o;render();},
-            // Selector de hora con <select> — compatible con iOS/iPad sin cierre prematuro
-            updateDayTimePart:(dateStr,field,part,val)=>{
-                if(!State.dayPlans[dateStr])State.dayPlans[dateStr]={wakeUp:"07:00",bedtime:"23:00",events:[]};
-                const [h,m]=(State.dayPlans[dateStr][field]||"07:00").split(':');
-                State.dayPlans[dateStr][field]=part==='h'?`${String(val).padStart(2,'0')}:${m}`:`${h}:${String(val).padStart(2,'0')}`;
-                saveData();render();
-            },
+            updateDayTimePart:(dateStr,field,part,val)=>{ if(!State.dayPlans[dateStr])State.dayPlans[dateStr]={wakeUp:"07:00",bedtime:"23:00",events:[]}; const [h,m]=(State.dayPlans[dateStr][field]||"07:00").split(':'); State.dayPlans[dateStr][field]=part==='h'?`${String(val).padStart(2,'0')}:${m}`:`${h}:${String(val).padStart(2,'0')}`; saveData();render(); },
             toggleDayForm:()=>{State.dayForm.show=!State.dayForm.show;render();},
             setDayFormField:(field,val)=>{State.dayForm[field]=val;render();},
             updateDayFormTitle:val=>{State.dayForm.title=val;},
             updateDayFormNotes:val=>{State.dayForm.notes=val;},
-            addEvent:()=>{
-                const{title,time,type,duration,notes}=State.dayForm;if(!title.trim())return;
-                const p=Actions.getDayPlan();
-                p.events.push({id:Date.now().toString(),title:title.trim(),time,type,duration,notes});
-                p.events.sort((a,b)=>a.time.localeCompare(b.time));
-                State.dayForm={show:false,title:"",time:"09:00",type:"meeting",duration:60,notes:""};
-                saveData();render();
+            
+            // --- NUEVAS FUNCIONES PARA LOS EVENTOS PERSONALIZADOS ---
+            addEventType: (label, color) => {
+                const id = label.toLowerCase().replace(/\s+/g, '_') + Date.now();
+                State.eventTypes.push({ id, label, color });
+                saveData(); render();
             },
-            deleteEvent:id=>{const p=Actions.getDayPlan();p.events=p.events.filter(e=>e.id!==id);saveData();render();},
+            calculateDuration: (start, end) => {
+                const [h1, m1] = start.split(':').map(Number);
+                const [h2, m2] = end.split(':').map(Number);
+                let mins = (h2 * 60 + m2) - (h1 * 60 + m1);
+                if(mins < 0) mins += 24 * 60; // Por si cruza la medianoche
+                return mins;
+            },
+            addMinutes: (time, mins) => {
+                const [h, m] = time.split(':').map(Number);
+                const total = h * 60 + m + mins;
+                return `${String(Math.floor(total/60)%24).padStart(2,'0')}:${String(total%60).padStart(2,'0')}`;
+            },
+            addEvent: () => {
+                const {title, time, endTime, type, notes} = State.dayForm; 
+                if(!title.trim()) return;
+                const duration = Actions.calculateDuration(time, endTime);
+                const p = Actions.getDayPlan();
+                p.events.push({id:Date.now().toString(), title:title.trim(), time, type, duration, notes});
+                p.events.sort((a,b) => a.time.localeCompare(b.time));
+                State.dayForm = {show:false, title:"", time:"09:00", endTime:"10:00", type:State.eventTypes[0]?.id || 'focus', notes:""};
+                saveData(); render();
+            },
+            deleteEvent: id => {const p=Actions.getDayPlan(); p.events=p.events.filter(e=>e.id!==id); saveData(); render();},
         };
 
         // ── HOY ─────────────────────────────────────────────────────────────────────
@@ -259,7 +266,12 @@
             const nav = {0:"Hoy","-1":"Ayer",1:"Mañana"}[State.dayOffset] || dn;
             const f   = State.dayForm;
 
-            // Selectores de hora
+            // Filtro de eventos
+            const filteredEvents = State.activeFilter === 'all' 
+                ? p.events 
+                : p.events.filter(e => e.type === State.activeFilter);
+
+            // Selectores de hora para el inicio y fin del día
             const mkSel = (dateStr, field, fallback) => {
                 const cur = State.dayPlans[dateStr]?.[field] || fallback;
                 const [hS,mS] = cur.split(':');
@@ -304,61 +316,91 @@
                             ${mkSel(ds,'bedtime','23:00')}
                         </div>
                     </div>
-                </div>`;
-
-            // Timeline
-            html+=`<div class="card" style="padding:22px;">
-                <div style="display:flex;align-items:center;gap:9px;font-size:15px;font-weight:600;margin-bottom:20px;">
-                    <span style="display:inline-flex;width:20px;height:20px;color:var(--accent);">${gico('list',20)}</span>Agenda del día
                 </div>
-                <div style="display:flex;align-items:center;gap:14px;margin-bottom:${p.events.length?'0':'16px'};">
-                    <div style="display:flex;flex-direction:column;align-items:center;width:36px;flex-shrink:0;">
-                        <div style="width:36px;height:36px;border-radius:50%;background:var(--accent-light);border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;color:var(--accent);">${gico('sunrise',20)}</div>
-                        ${p.events.length?`<div style="width:2px;height:16px;background:var(--brd);"></div>`:''}
+
+                <div style="display:flex; gap:8px; overflow-x:auto; padding-bottom:10px; margin-bottom:6px;" class="modal-scroll">
+                    <button onclick="State.activeFilter='all'; render();" 
+                        style="padding:6px 14px; border-radius:20px; border:1.5px solid ${State.activeFilter==='all'?'var(--accent)':'var(--brd)'}; 
+                        background:${State.activeFilter==='all'?'var(--accent)22':'var(--bg)'}; font-size:12px; font-weight:600; cursor:pointer; color:var(--tx);">Todos</button>
+                    ${State.eventTypes.map(t => `
+                        <button onclick="State.activeFilter='${t.id}'; render();" 
+                            style="padding:6px 14px; border-radius:20px; border:1.5px solid ${State.activeFilter===t.id?t.color:'var(--brd)'}; 
+                            background:${State.activeFilter===t.id?t.color+'22':'var(--bg)'}; color:${State.activeFilter===t.id?t.color:'var(--tx)'}; font-size:12px; font-weight:600; white-space:nowrap; cursor:pointer;">
+                            ${t.label}
+                        </button>
+                    `).join('')}
+                </div>
+
+                <div class="card" style="padding:22px; margin-bottom:16px;">
+                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px;">
+                        <span style="color:var(--accent);">${gico('list',20)}</span>
+                        <span style="font-size:15px; font-weight:600;">Agenda ${State.activeFilter === 'all' ? 'del día' : '- ' + (State.eventTypes.find(t=>t.id===State.activeFilter)?.label||'')}</span>
                     </div>
-                    <div><div style="font-size:15px;font-weight:600;color:var(--accent);">${fmt12(p.wakeUp)}</div><div class="sans" style="font-size:12px;color:var(--mu);">Despertar</div></div>
-                </div>`;
-            if(!p.events.length) html+=`<div style="border-left:2px dashed var(--brd);margin-left:17px;padding:20px 0 20px 20px;color:var(--mu);"><div class="sans" style="font-size:14px;font-style:italic;">Sin eventos. Agrega tu primera actividad.</div></div>`;
-            p.events.forEach((ev,idx)=>{
-                const t=evType(ev.type); const isLast=idx===p.events.length-1;
-                html+=`<div style="display:flex;gap:14px;">
-                    <div style="display:flex;flex-direction:column;align-items:center;width:36px;flex-shrink:0;">
-                        <div style="width:2px;${isLast?'height:20px':'flex:1;min-height:20px'};background:var(--brd);"></div>
-                        <div style="width:32px;height:32px;border-radius:50%;background:${t.color}22;border:2px solid ${t.color}66;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:${t.color};">${gico(t.id,15)}</div>
-                        ${!isLast?`<div style="width:2px;height:12px;background:var(--brd);"></div>`:''}
-                    </div>
-                    <div style="flex:1;background:${t.color}0A;border:1.5px solid ${t.color}33;border-radius:14px;padding:12px 14px;margin-top:8px;">
-                        <div class="flex justify-between items-center">
-                            <div style="flex:1;"><div style="font-size:15px;font-weight:500;">${ev.title}</div>
-                            <div class="sans" style="font-size:12px;color:var(--mu);margin-top:4px;">${fmt12(ev.time)} · ${fmtDuration(ev.duration)} · ${t.label}</div>
-                            ${ev.notes?`<div class="sans" style="font-size:12px;color:var(--mu);margin-top:5px;padding-top:5px;border-top:1px solid ${t.color}22;font-style:italic;">${ev.notes}</div>`:''}</div>
-                            <button class="btn" onclick="Actions.deleteEvent('${ev.id}')" style="background:transparent;color:var(--mu);font-size:20px;padding:0 4px;margin-left:8px;flex-shrink:0;line-height:1;">×</button>
+                    
+                    ${filteredEvents.length === 0 ? `<div style="text-align:center; padding:20px; color:var(--mu); font-style:italic; font-size:14px;">No hay actividades registradas.</div>` : ''}
+
+                    ${filteredEvents.map(ev => {
+                        const type = State.eventTypes.find(t => t.id === ev.type) || State.eventTypes[0];
+                        return `
+                        <div style="display:flex; gap:14px; margin-bottom:16px; position:relative;">
+                            <div style="display:flex; flex-direction:column; align-items:center; width:45px; flex-shrink:0;">
+                                <div class="sans" style="font-size:12px; font-weight:700; color:var(--tx);">${ev.time}</div>
+                                <div style="width:2px; flex:1; min-height:16px; background:var(--brd); margin:4px 0; border-radius:2px;"></div>
+                                <div class="sans" style="font-size:12px; font-weight:500; color:var(--mu);">${Actions.addMinutes(ev.time, ev.duration)}</div>
+                            </div>
+                            <div style="flex:1; background:${type.color}11; border-left:4px solid ${type.color}; border-radius:8px; padding:12px 14px; position:relative;">
+                                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                                    <div style="font-size:15px; font-weight:600; color:#1D1D1F; padding-right:20px;">${ev.title}</div>
+                                    <button class="btn" onclick="Actions.deleteEvent('${ev.id}')" style="position:absolute; top:8px; right:8px; background:none; border:none; color:var(--mu); font-size:20px; padding:0;">×</button>
+                                </div>
+                                <div class="sans" style="font-size:11px; color:${type.color}; font-weight:700; text-transform:uppercase; margin-top:4px; letter-spacing:0.5px;">${type.label}</div>
+                                ${ev.notes ? `<div class="sans" style="font-size:12px; color:var(--mu); margin-top:6px; font-style:italic;">${ev.notes}</div>` : ''}
+                            </div>
+                        </div>`;
+                    }).join('')}
+                </div>
+
+                ${f.show ? `
+                <div class="card" style="padding:22px; border:1.5px solid var(--accent);">
+                    <div style="font-size:15px; font-weight:600; margin-bottom:16px;">Nueva Actividad</div>
+                    <input class="inp" placeholder="¿Qué vas a hacer?" value="${f.title}" oninput="Actions.updateDayFormTitle(this.value)" style="margin-bottom:16px;">
+                    
+                    <div style="display:flex; gap:12px; margin-bottom:16px;">
+                        <div style="flex:1;">
+                            <label class="sans" style="font-size:10px; font-weight:700; color:var(--mu); display:block; margin-bottom:6px; letter-spacing:0.5px;">INICIO</label>
+                            <input type="time" class="inp" value="${f.time}" onchange="Actions.setDayFormField('time',this.value)">
+                        </div>
+                        <div style="flex:1;">
+                            <label class="sans" style="font-size:10px; font-weight:700; color:var(--mu); display:block; margin-bottom:6px; letter-spacing:0.5px;">FIN</label>
+                            <input type="time" class="inp" value="${f.endTime}" onchange="Actions.setDayFormField('endTime',this.value)">
                         </div>
                     </div>
-                </div>`;
-            });
-            html+=`<div style="display:flex;align-items:center;gap:14px;">
-                <div style="display:flex;flex-direction:column;align-items:center;width:36px;flex-shrink:0;">
-                    ${p.events.length?`<div style="width:2px;height:16px;background:var(--brd);"></div>`:''}
-                    <div style="width:36px;height:36px;border-radius:50%;background:var(--bg3);border:2px solid var(--brd);display:flex;align-items:center;justify-content:center;color:var(--mu);">${gico('moon',20)}</div>
-                </div>
-                <div><div style="font-size:15px;font-weight:600;color:var(--mu);">${fmt12(p.bedtime)}</div><div class="sans" style="font-size:12px;color:var(--mu);">Hora de dormir</div></div>
-            </div></div>`;
-            if(f.show) html+=`<div class="card" style="padding:22px;border:1.5px solid var(--accent);">
-                <div style="font-size:15px;font-weight:600;margin-bottom:16px;">Nuevo evento</div>
-                <input class="inp" value="${f.title}" oninput="Actions.updateDayFormTitle(this.value)" placeholder="Título del evento..." style="margin-bottom:12px;"/>
-                <div class="flex" style="gap:12px;margin-bottom:16px;">
-                    <div style="flex:1;"><div class="sans" style="font-size:10px;color:var(--mu);font-weight:700;margin-bottom:8px;letter-spacing:0.5px;">HORA</div>
-                    <input type="time" class="inp" value="${f.time}" onchange="Actions.setDayFormField('time',this.value)" style="text-align:center;"/></div>
-                    <div style="flex:1;"><div class="sans" style="font-size:10px;color:var(--mu);font-weight:700;margin-bottom:8px;letter-spacing:0.5px;">DURACIÓN</div>
-                    <select class="inp" onchange="Actions.setDayFormField('duration',parseInt(this.value))" style="cursor:pointer;appearance:none;text-align:center;">${DURATIONS.map(dur=>`<option value="${dur.mins}" ${f.duration===dur.mins?'selected':''}>${dur.label}</option>`).join('')}</select></div>
-                </div>
-                <div style="margin-bottom:16px;"><div class="sans" style="font-size:10px;color:var(--mu);font-weight:700;margin-bottom:10px;letter-spacing:0.5px;">TIPO</div>
-                <div class="flex" style="flex-wrap:wrap;gap:7px;">${EVENT_TYPES.map(t=>`<button class="btn sans" onclick="Actions.setDayFormField('type','${t.id}')" style="display:flex;align-items:center;gap:6px;padding:8px 11px;border-radius:10px;border:1.5px solid ${f.type===t.id?t.color:'var(--brd)'};background:${f.type===t.id?t.color+'22':'var(--bg3)'};color:${f.type===t.id?t.color:'var(--mu)'};font-size:12px;font-weight:${f.type===t.id?'600':'400'};"><span style="display:inline-flex;width:15px;height:15px;">${gico(t.id,15)}</span>${t.label}</button>`).join('')}</div></div>
-                <textarea class="inp ta" oninput="Actions.updateDayFormNotes(this.value)" placeholder="Notas opcionales..." style="margin-bottom:16px;min-height:52px;">${f.notes}</textarea>
-                <button class="btn sans" onclick="Actions.addEvent()" style="background:var(--accent);color:#fff;border-radius:12px;padding:14px 0;font-weight:600;font-size:16px;width:100%;">Guardar evento</button>
+
+                    <label class="sans" style="font-size:10px; font-weight:700; color:var(--mu); display:block; margin-bottom:10px; letter-spacing:0.5px;">CATEGORÍA</label>
+                    <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px;">
+                        ${State.eventTypes.map(t => `
+                            <button class="btn sans" onclick="Actions.setDayFormField('type','${t.id}')" 
+                                style="padding:8px 12px; border-radius:10px; border:1.5px solid ${f.type===t.id?t.color:'var(--brd)'}; 
+                                background:${f.type===t.id?t.color+'22':'var(--bg3)'}; color:${f.type===t.id?t.color:'var(--tx)'}; font-size:12px; font-weight:600;">
+                                ${t.label}
+                            </button>
+                        `).join('')}
+                        <button class="btn sans" onclick="const n=prompt('Nombre de la categoría:'); const c=prompt('Color (ej. #6A8A62, #D4A373, #7A8B99):', '#6A8A62'); if(n&&c) Actions.addEventType(n,c);" 
+                            style="padding:8px 12px; border-radius:10px; border:1.5px dashed var(--brd); color:var(--mu); font-size:12px; font-weight:600; background:transparent;">+ Nuevo</button>
+                    </div>
+
+                    <textarea class="inp ta" oninput="Actions.updateDayFormNotes(this.value)" placeholder="Notas opcionales..." style="margin-bottom:16px;"></textarea>
+
+                    <button class="btn sans" onclick="Actions.addEvent()" 
+                        style="background:var(--accent); color:#fff; width:100%; padding:14px; border-radius:12px; font-weight:600; font-size:16px;">Añadir a la Agenda</button>
+                </div>` : ''}
+
+                <button class="btn sans" onclick="Actions.toggleDayForm()" 
+                    style="width:100%; padding:16px; border-radius:14px; background:${f.show?'var(--bg3)':'var(--accent)'}; 
+                    color:${f.show?'var(--tx)':'#fff'}; font-weight:600; font-size:16px; margin-bottom:20px; border:${f.show?'1.5px solid var(--brd)':'none'};">
+                    ${f.show ? 'Cancelar' : '+ Nueva Actividad'}
+                </button>
             </div>`;
-            html+=`<button class="btn sans" onclick="Actions.toggleDayForm()" style="width:100%;background:${f.show?'var(--bg3)':'var(--accent)'};color:${f.show?'var(--tx)':'#fff'};border:${f.show?'1.5px solid var(--brd)':'none'};border-radius:14px;padding:16px 0;font-weight:600;font-size:16px;">${f.show?"Cancelar":"+ Agregar evento"}</button></div>`;
             return html;
         };
 
