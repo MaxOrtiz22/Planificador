@@ -98,25 +98,13 @@
         const MONTHS = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
         const MONTHS_LONG = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
 
-        // ── HELPERS ─────────────────────────────────────────────────────────────────
+        //── HELPERS ─────────────────────────────────────────────────────────────────
         const toStr = (d=new Date()) => { const p=n=>n<10?'0'+n:n; return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`; };
         const todayStr = toStr();
         const weekDatesForOffset = (off=0) => { const n=new Date(); n.setDate(n.getDate()+off*7); const dow=n.getDay(); const m=new Date(n); m.setDate(n.getDate()-(dow===0?6:dow-1)); m.setHours(0,0,0,0); return Array.from({length:7},(_,i)=>{const d=new Date(m);d.setDate(m.getDate()+i);return toStr(d);}); };
         const weekKeyForOffset = (off=0) => { const d=new Date(); d.setDate(d.getDate()+off*7); const y=d.getFullYear(); const s=new Date(y,0,1); const w=Math.ceil(((d-s)/86400000+s.getDay()+1)/7); return `${y}-W${String(w).padStart(2,'0')}`; };
         const calcStreak = (id,comp) => { let s=0; const d=new Date(); d.setHours(0,0,0,0); if(!comp[toStr(d)]?.includes(id)) d.setDate(d.getDate()-1); for(let i=0;i<365;i++){if(!comp[toStr(d)]?.includes(id))break;s++;d.setDate(d.getDate()-1);}return s; };
         const fmtShort = str => { const d=new Date(str+"T12:00:00"); return `${d.getDate()} ${MONTHS[d.getMonth()]}`; };
-
-        // Sueño: de la noche anterior al despertar de hoy
-        const calcSleepHours = (prevBedtime, wakeUp) => {
-            const [bH,bM]=prevBedtime.split(':').map(Number);
-            const [wH,wM]=wakeUp.split(':').map(Number);
-            let bMins=bH*60+bM, wMins=wH*60+wM+24*60;
-            if(bH<4) bMins+=24*60;
-            const sleepMins=wMins-bMins;
-            if(sleepMins<=0||sleepMins>20*60) return '—';
-            const h=Math.floor(sleepMins/60),m=sleepMins%60;
-            return m>0?`${h}h ${m}min`:`${h}h`;
-        };
         const fmtDuration = mins => { if(mins<60)return `${mins} min`; const h=Math.floor(mins/60),m=mins%60; return m?`${h}h ${m}min`:`${h}h`; };
         const fmt12 = t => { const [h,m]=t.split(':').map(Number); return `${h%12||12}:${String(m).padStart(2,'0')} ${h>=12?'PM':'AM'}`; };
         const evType = id => EVENT_TYPES.find(t=>t.id===id)||EVENT_TYPES[EVENT_TYPES.length-1];
@@ -271,17 +259,7 @@
             const nav = {0:"Hoy","-1":"Ayer",1:"Mañana"}[State.dayOffset] || dn;
             const f   = State.dayForm;
 
-            // Día anterior para calcular sueño
-            const prevDs = (() => { const pd=new Date(); pd.setDate(pd.getDate()+State.dayOffset-1); return toStr(pd); })();
-            if(!State.dayPlans[prevDs]) State.dayPlans[prevDs]={wakeUp:"07:00",bedtime:"23:00",events:[]};
-            const prev = State.dayPlans[prevDs];
-
-            const sleep = calcSleepHours(prev.bedtime, p.wakeUp);
-            const sleepH = sleep==='—' ? -1 : parseInt(sleep.split('h')[0]);
-            const sc = sleepH<0?'var(--mu)':sleepH>=7?'#6A8A62':sleepH>=6?'#D4A373':'#C1A58D';
-            const sn = sleep==='—'?'Sin datos':sleepH>=8?'Óptimo':sleepH>=7?'Suficiente':sleepH>=6?'Poco':'Insuf.';
-
-            // Selectores de hora compatibles con iOS (solo confirma al cerrar el picker)
+            // Selectores de hora
             const mkSel = (dateStr, field, fallback) => {
                 const cur = State.dayPlans[dateStr]?.[field] || fallback;
                 const [hS,mS] = cur.split(':');
@@ -310,44 +288,20 @@
                     <button class="btn" onclick="Actions.setDayOffset(${State.dayOffset+1})" style="background:var(--bg2);border:1.5px solid var(--brd);border-radius:12px;padding:8px 16px;font-size:16px;">›</button>
                 </div>
 
-                <!-- Sueño: rediseñado para mayor claridad -->
-                <div class="card" style="padding:22px;margin-bottom:16px;">
-                    <div style="display:flex;align-items:center;gap:9px;font-size:15px;font-weight:600;margin-bottom:16px;">
-                        <span style="display:inline-flex;width:20px;height:20px;color:var(--accent);">${gico('clock',20)}</span>Sueño
-                    </div>
-                    <!-- Resumen visual: acostarse → horas → despertar -->
-                    <div style="display:flex;align-items:center;background:var(--bg3);border-radius:14px;padding:14px 8px;margin-bottom:16px;">
-                        <div style="flex:1;text-align:center;">
-                            <div style="display:flex;justify-content:center;margin-bottom:3px;color:var(--mu);">${gico('moon',18)}</div>
-                            <div class="sans" style="font-size:9px;color:var(--mu);letter-spacing:.5px;margin-bottom:2px;">ANOCHE</div>
-                            <div style="font-size:15px;font-weight:600;">${fmt12(prev.bedtime)}</div>
-                        </div>
-                        <div style="flex:1.3;text-align:center;padding:0 6px;">
-                            <div style="font-size:21px;font-weight:700;color:${sc};line-height:1.1;">${sleep}</div>
-                            <div style="height:4px;background:var(--brd);border-radius:2px;margin:5px 2px;overflow:hidden;">
-                                <div style="height:100%;border-radius:2px;background:${sc};width:${sleepH<0?0:Math.min(sleepH/9*100,100)}%;transition:width .5s;"></div>
-                            </div>
-                            <div class="sans" style="font-size:11px;color:${sc};font-weight:600;">${sn}</div>
-                        </div>
-                        <div style="flex:1;text-align:center;">
-                            <div style="display:flex;justify-content:center;margin-bottom:3px;color:var(--accent);">${gico('sunrise',18)}</div>
-                            <div class="sans" style="font-size:9px;color:var(--mu);letter-spacing:.5px;margin-bottom:2px;">HOY</div>
-                            <div style="font-size:15px;font-weight:600;">${fmt12(p.wakeUp)}</div>
-                        </div>
-                    </div>
-                    <!-- Selectores de hora (compatibles iOS/iPad) -->
-                    <div class="flex" style="gap:12px;">
+                <div class="card" style="padding:16px 22px;margin-bottom:16px;">
+                    <div class="flex" style="gap:16px;">
                         <div style="flex:1;">
                             <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--mu);font-weight:700;letter-spacing:.5px;margin-bottom:8px;" class="sans">
-                                <span style="display:inline-flex;width:12px;height:12px;color:var(--mu);">${gico('moon',12)}</span>ACOSTARSE
-                            </div>
-                            ${mkSel(prevDs,'bedtime','23:00')}
-                        </div>
-                        <div style="flex:1;">
-                            <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--mu);font-weight:700;letter-spacing:.5px;margin-bottom:8px;" class="sans">
-                                <span style="display:inline-flex;width:12px;height:12px;color:var(--accent);">${gico('sunrise',12)}</span>DESPERTAR
+                                <span style="display:inline-flex;width:14px;height:14px;color:var(--accent);">${gico('sunrise',14)}</span>INICIO
                             </div>
                             ${mkSel(ds,'wakeUp','07:00')}
+                        </div>
+                        <div style="width:1.5px;background:var(--brd);border-radius:1px;margin:4px 0;"></div>
+                        <div style="flex:1;">
+                            <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--mu);font-weight:700;letter-spacing:.5px;margin-bottom:8px;" class="sans">
+                                <span style="display:inline-flex;width:14px;height:14px;color:var(--mu);">${gico('moon',14)}</span>FIN
+                            </div>
+                            ${mkSel(ds,'bedtime','23:00')}
                         </div>
                     </div>
                 </div>`;
