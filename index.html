@@ -13,7 +13,7 @@
             --tx: #1D1D1F; --mu: #86868B; --accent: #6A8A62;
             --accent-light: #EAF0E8; --shadow: 0 4px 24px rgba(106, 138, 98, 0.08);
         }
-        body { margin:0; padding:0; padding-top:52px; padding-bottom:85px; background-color:var(--bg); color:var(--tx); font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif; -webkit-tap-highlight-color:transparent; }
+        body { margin:0; padding:0; padding-top:52px; padding-bottom:120px; background-color:var(--bg); color:var(--tx); font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif; -webkit-tap-highlight-color:transparent; }
         .container { padding:24px 16px; max-width:480px; margin:0 auto; }
         .card { background:var(--bg2); border-radius:20px; padding:20px; margin-bottom:16px; border:1.5px solid var(--brd); box-shadow:var(--shadow); }
         .inp { background:var(--bg3); border:1.5px solid var(--brd); border-radius:12px; padding:14px 16px; color:var(--tx); font-size:16px; width:100%; box-sizing:border-box; outline:none; font-family:inherit; transition:all 0.2s; }
@@ -21,7 +21,7 @@
         .ta { resize:vertical; min-height:60px; line-height:1.5; }
         .btn { border:none; cursor:pointer; font-family:inherit; transition:transform 0.1s,opacity 0.2s; }
         .btn:active { transform:scale(0.96); }
-        nav { position:fixed; bottom:0; left:0; right:0; background:rgba(255, 255, 255, 0.85); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-top:0.5px solid rgba(0,0,0,0.08); display:flex; justify-content:space-around; align-items:center; height:60px; z-index:1000; padding-bottom:env(safe-area-inset-bottom); }
+        nav { position:fixed; bottom:calc(16px + env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%); width:calc(100% - 32px); max-width:448px; background:rgba(255,255,255,0.9); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border:0.5px solid rgba(0,0,0,0.08); border-radius:35px; display:flex; justify-content:space-around; align-items:center; height:64px; z-index:1000; box-shadow:0 8px 32px rgba(106,138,98,0.15); }
         .nav-btn { background:none; border:none; width:50px; height:50px; display:flex; align-items:center; justify-content:center; color:#9A958A; transition:all 0.2s ease; cursor:pointer; }
         .nav-btn.active { color:var(--accent); transform:scale(1.1); }
         .nav-icon { width:26px; height:26px; display:flex; align-items:center; justify-content:center; }
