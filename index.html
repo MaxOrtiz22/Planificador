@@ -21,11 +21,11 @@
         .ta { resize:vertical; min-height:60px; line-height:1.5; }
         .btn { border:none; cursor:pointer; font-family:inherit; transition:transform 0.1s,opacity 0.2s; }
         .btn:active { transform:scale(0.96); }
-        nav { position:fixed; bottom:0; left:0; right:0; background:var(--nav-bg); backdrop-filter:saturate(180%) blur(20px); -webkit-backdrop-filter:saturate(180%) blur(20px); border-top:1px solid rgba(223,217,201,0.6); display:flex; z-index:100; padding-bottom:env(safe-area-inset-bottom); }
-        .nav-btn { flex:1; padding:12px 0 10px; background:none; border:none; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:3px; font-size:9px; font-weight:600; color:#9A958A; transition:color 0.2s; letter-spacing:0.2px; }
-        .nav-btn.active { color:var(--accent); }
-        .nav-icon { width:20px; height:20px; display:flex; align-items:center; justify-content:center; }
-        .nav-icon svg { width:100%; height:100%; }
+        nav { position:fixed; bottom:0; left:0; right:0; background:rgba(255, 255, 255, 0.85); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-top:0.5px solid rgba(0,0,0,0.08); display:flex; justify-content:space-around; align-items:center; height:60px; z-index:1000; padding-bottom:env(safe-area-inset-bottom); }
+        .nav-btn { background:none; border:none; width:50px; height:50px; display:flex; align-items:center; justify-content:center; color:#8e8e8e; transition:all 0.2s ease; cursor:pointer; }
+        .nav-btn.active { color:#000000; transform:scale(1.1); }
+        .nav-icon { width:26px; height:26px; display:flex; align-items:center; justify-content:center; }
+        .nav-icon svg { width:100%; height:100%; stroke-width:1.8px; }
         .flex { display:flex; } .items-center { align-items:center; } .justify-between { justify-content:space-between; }
         .grid-12 { display:grid; grid-template-columns:repeat(12,1fr); gap:4px; }
         .sans { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
@@ -524,7 +524,7 @@
             if(id==='stats') return `<svg ${p}><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`;
             return '';
         };
-        const renderNav = () => `<nav>${[["today","Hoy"],["day","Agenda"],["habits","Hábitos"],["week","Semana"],["stats","Reportes"]].map(([id,lb])=>`<button class="nav-btn ${State.tab===id?'active':''}" onclick="Actions.setTab('${id}')"><span class="nav-icon">${getNavIcon(id)}</span>${lb}</button>`).join('')}</nav>`;
+       const renderNav = () => `<nav>${["today","day","habits","week","stats"].map(id=>`<button class="nav-btn ${State.tab===id?'active':''}" onclick="Actions.setTab('${id}')"><span class="nav-icon">${getNavIcon(id)}</span></button>`).join('')}</nav>`;
 
         // ── RENDER ───────────────────────────────────────────────────────────────────
         const render = () => {
